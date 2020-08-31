@@ -4,7 +4,7 @@
 `include "harness_chip.v"
 `include "spiflash.v"
 
-module sysctrl_tb;
+module mprj_ctrl_tb;
 	reg XCLK;
 	reg XI;
 
@@ -35,73 +35,41 @@ module sysctrl_tb;
 	end
 
 	initial begin
-		$dumpfile("sysctrl_tb.vcd");
-		$dumpvars(0, sysctrl_tb);
+		$dumpfile("mprj_ctrl_tb.vcd");
+		$dumpvars(0, mprj_ctrl_tb);
 		repeat (25) begin
 			repeat (1000) @(posedge XCLK);
 			$display("+1000 cycles");
 		end
 		$display("%c[1;31m",27);
-		$display ("Monitor: Timeout, Test GPIO (RTL) Failed");
+		$display ("Monitor: Timeout, Test Mega-Project (RTL) Failed");
 		 $display("%c[0m",27);
 		$finish;
 	end
 
 	always @(gpio) begin
 		if(gpio == 16'hA040) begin
-			$display("System control Test started");
+			$display("Mega-Project control Test started");
 		end
 		else if(gpio == 16'hAB40) begin
 			$display("%c[1;31m",27);
-			$display("Monitor: System control (RTL) Test failed");
+			$display("Monitor: IO control R/W failed");
 			$display("%c[0m",27);
 			$finish;
 		end
 		else if(gpio == 16'hAB41) begin
-			$display("Monitor: System control product ID read passed");
+			$display("Monitor: IO control R/W passed");
 		end
         else if(gpio == 16'hAB50) begin
             $display("%c[1;31m",27);
-			$display("Monitor: System control manufacture ID read failed");
+			$display("Monitor: power control R/W failed");
 			$display("%c[0m",27);
 			$finish;
         end else if(gpio == 16'hAB51) begin
-			$display("Monitor: System control manufacture ID read passed");
-        end
-        else if(gpio == 16'hAB60) begin
-            $display("%c[1;31m",27);
-			$display("Monitor: System control mask rev read failed");
-			$display("%c[0m",27);
-			$finish;
-        end else if(gpio == 16'hAB61) begin
-			$display("Monitor: System control mask rev read passed");
-        end
-        else if(gpio == 16'hAB70) begin
-            $display("%c[1;31m",27);
-			$display("Monitor: System control pll-bypass read failed");
-			$display("%c[0m",27);
-			$finish;
-        end else if(gpio == 16'hAB71) begin
-			$display("Monitor: System control pll-bypass read passed");
-        end
-        else if(gpio == 16'hAB80) begin
-            $display("%c[1;31m",27);
-			$display("Monitor: System control pll-config read failed");
-			$display("%c[0m",27);
-			$finish;
-        end else if(gpio == 16'hAB81) begin
-			$display("Monitor: System control pll-config read passed");
-        end
-        else if(gpio == 16'hAB90) begin
-            $display("%c[1;31m",27);
-			$display("Monitor: System control spi-enables read failed");
-			$display("%c[0m",27);
-			$finish;
-        end else if(gpio == 16'hAB91) begin
-			$display("Monitor: System control spi-enables read passed");
-			$display("Monitor: Sysctrl (RTL) test passed.");
+			$display("Monitor: power control R/W passed");
+            $display("Monitor: Mega-Project control (RTL) test passed.");
             $finish;
-        end
+        end			
 	end
 
 	initial begin
@@ -157,7 +125,7 @@ module sysctrl_tb;
 	);
 
 	spiflash #(
-		.FILENAME("sysctrl.hex")
+		.FILENAME("mprj_ctrl.hex")
 	) spiflash (
 		.csb(flash_csb),
 		.clk(flash_clk),
