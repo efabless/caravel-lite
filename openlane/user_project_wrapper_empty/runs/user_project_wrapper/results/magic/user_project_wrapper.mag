@@ -1,6 +1,6 @@
 magic
 tech sky130A
-timestamp 1606416959
+timestamp 1606415645
 << checkpaint >>
 rect -4848 -4313 296810 356281
 << metal2 >>
@@ -11099,7 +11099,7 @@ rlabel metal5 s -4218 -3682 296180 -3382 4 vssa2
 port 644 nsew
 << properties >>
 string FIXED_BBOX 0 0 292000 352000
-string GDS_FILE /project/openlane/user_project_wrapper_empty/runs/user_project_wrapper_empty/results/magic/user_project_wrapper.gds
+string GDS_FILE /project/openlane/user_project_wrapper_empty/runs/user_project_wrapper/results/magic/user_project_wrapper.gds
 string GDS_END 306838
 string GDS_START 130
 << end >>
