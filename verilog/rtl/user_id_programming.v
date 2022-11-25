@@ -32,7 +32,7 @@ module user_id_programming #(
     wire [31:0] user_proj_id_low;
 
     // For the mask revision input, use an array of digital constant logic cells
-
+`ifndef CARAVEL_FPGA
     sky130_fd_sc_hd__conb_1 mask_rev_value [31:0] (
 `ifdef USE_POWER_PINS
             .VPWR(VPWR),
@@ -43,7 +43,10 @@ module user_id_programming #(
             .HI(user_proj_id_high),
             .LO(user_proj_id_low)
     );
-
+`else
+    assign user_proj_id_high = ~0;
+    assign user_proj_id_low = 0;
+`endif
     genvar i;
     generate
 	for (i = 0; i < 32; i = i+1) begin

@@ -38,7 +38,7 @@ module gpio_defaults_block #(
     wire [12:0] gpio_defaults_low;
 
     // For the mask revision input, use an array of digital constant logic cells
-
+`ifndef CARAVEL_FPGA
     sky130_fd_sc_hd__conb_1 gpio_default_value [12:0] (
 `ifdef USE_POWER_PINS
             .VPWR(VPWR),
@@ -49,7 +49,10 @@ module gpio_defaults_block #(
             .HI(gpio_defaults_high),
             .LO(gpio_defaults_low)
     );
-
+`else
+    assign gpio_defaults_high = ~0;
+    assign gpio_defaults_low = 0;
+`endif
     genvar i;
     generate
         for (i = 0; i < 13; i = i+1) begin

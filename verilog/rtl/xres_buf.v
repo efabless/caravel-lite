@@ -38,6 +38,7 @@ inout  LVPWR;
 inout  LVGND;
 `endif
 
+`ifndef CARAVEL_FPGA
 sky130_fd_sc_hvl__lsbufhv2lv_1 lvlshiftdown (
 `ifdef USE_POWER_PINS
 	.VPWR(VPWR),
@@ -51,5 +52,7 @@ sky130_fd_sc_hvl__lsbufhv2lv_1 lvlshiftdown (
 	.A(A),
 	.X(X)
 );
-
+`else
+    assign X = A;
+`endif
 endmodule

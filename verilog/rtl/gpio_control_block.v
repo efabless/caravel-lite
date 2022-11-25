@@ -243,6 +243,7 @@ module gpio_control_block #(
     /* going to the user project.					*/
     assign user_gpio_in = pad_gpio_in & gpio_logic1;
 
+`ifndef CARAVEL_FPGA
     (* keep *)
     sky130_fd_sc_hd__macro_sparecell spare_cell (
 `ifdef USE_POWER_PINS
@@ -266,6 +267,9 @@ module gpio_control_block #(
 
     assign zero = zero_unbuf;
     assign one = one_unbuf;
-
+`else
+    assign zero = 1'b0;
+    assign one = 1'b1;
+`endif
 endmodule
 `default_nettype wire

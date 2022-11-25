@@ -6,7 +6,7 @@ module gpio_logic_high(
 
    output wire gpio_logic1
 );
-
+`ifndef CARAVEL_FPGA
  sky130_fd_sc_hd__conb_1 gpio_logic_high (
 `ifdef USE_POWER_PINS
             .VPWR(vccd1),
@@ -17,5 +17,7 @@ module gpio_logic_high(
             .HI(gpio_logic1),
             .LO()
     );
-
+`else
+    assign gpio_logic1 = 1'b1;
+`endif
 endmodule

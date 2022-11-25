@@ -50,7 +50,7 @@ module mgmt_protect_hv (
 `endif
 
     // Logic high in the VDDA (3.3V) domains
-
+`ifndef CARAVEL_FPGA
     sky130_fd_sc_hvl__conb_1 mprj_logic_high_hvl (
 `ifdef USE_POWER_PINS
         .VPWR(vdda1),
@@ -61,7 +61,11 @@ module mgmt_protect_hv (
         .HI(mprj_vdd_logic1_h),
         .LO()
     );
+`else
+    assign mprj_vdd_logic1_h = 1'b1;
+`endif
 
+`ifndef CARAVEL_FPGA
     sky130_fd_sc_hvl__conb_1 mprj2_logic_high_hvl (
 `ifdef USE_POWER_PINS
         .VPWR(vdda2),
@@ -72,9 +76,12 @@ module mgmt_protect_hv (
         .HI(mprj2_vdd_logic1_h),
         .LO()
     );
+`else
+    assign mprj2_vdd_logic1_h = 1'b1;
+`endif
 
     // Level shift the logic high signals into the 1.8V domain
-
+`ifndef CARAVEL_FPGA
     sky130_fd_sc_hvl__lsbufhv2lv_1 mprj_logic_high_lv (
 `ifdef USE_POWER_PINS
 	.VPWR(vdda1),
@@ -86,7 +93,11 @@ module mgmt_protect_hv (
 	.X(mprj_vdd_logic1),
 	.A(mprj_vdd_logic1_h)
     );
+`else
+    assign mprj_vdd_logic1 = mprj_vdd_logic1_h;
+`endif
 
+`ifndef CARAVEL_FPGA
     sky130_fd_sc_hvl__lsbufhv2lv_1 mprj2_logic_high_lv (
 `ifdef USE_POWER_PINS
 	.VPWR(vdda2),
@@ -98,6 +109,9 @@ module mgmt_protect_hv (
 	.X(mprj2_vdd_logic1),
 	.A(mprj2_vdd_logic1_h)
     );
+`else
+    assign mprj2_vdd_logic1 = mprj2_vdd_logic1_h;
+`endif
 endmodule
 
 `default_nettype wire
