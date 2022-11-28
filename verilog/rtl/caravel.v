@@ -750,10 +750,20 @@ module caravel (
 		.VPWR(vccd_core),
 		.VGND(vssd_core),
     `endif
+	`ifndef CARAVEL_FPGA
         .ext_clk_sel(ext_clk_sel),
+	`else
+		// Use external clock pad for now
+        .ext_clk_sel(1'b1),
+	`endif
         .ext_clk(clock_core_buf),
+	`ifndef CARAVEL_FPGA
         .pll_clk(pll_clk),
         .pll_clk90(pll_clk90),
+	`else
+        .pll_clk(1'b0),
+        .pll_clk90(1'b0),
+	`endif
         .resetb(rstb_l_buf),
         .sel(spi_pll_sel),
         .sel2(spi_pll90_sel),
@@ -764,7 +774,7 @@ module caravel (
     );
 
     // DCO/Digital Locked Loop
-
+`ifndef CARAVEL_FPGA
     digital_pll pll (
     `ifdef USE_POWER_PINS
 		.VPWR(vccd_core),
@@ -778,6 +788,7 @@ module caravel (
         .dco(spi_pll_dco_ena),
         .ext_trim(spi_pll_trim)
     );
+`endif
 
     // Housekeeping interface
 
