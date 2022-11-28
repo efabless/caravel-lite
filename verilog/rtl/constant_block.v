@@ -33,7 +33,7 @@ module constant_block (
 
     wire	one_unbuf;
     wire	zero_unbuf;
-
+`ifndef CARAVEL_FPGA
     sky130_fd_sc_hd__conb_1 const_source (
 `ifdef USE_POWER_PINS
             .VPWR(vccd),
@@ -44,6 +44,10 @@ module constant_block (
             .HI(one_unbuf),
             .LO(zero_unbuf)
     );
+`else
+    assign zero_unbuf = 1'b0;
+    assign one_unbuf = 1'b1;
+`endif
 
     /* Buffer the constant outputs (could be synthesized) */
     /* NOTE:  Constant cell HI, LO outputs are connected to power	*/
@@ -51,6 +55,7 @@ module constant_block (
     /* enough to drive inputs in the I/O cells while ensuring ESD	*/
     /* requirements, without buffering.					*/
 
+`ifndef CARAVEL_FPGA
     sky130_fd_sc_hd__buf_16 const_one_buf (
 `ifdef USE_POWER_PINS
             .VPWR(vccd),
@@ -61,7 +66,11 @@ module constant_block (
             .A(one_unbuf),
             .X(one)
     );
+`else
+    assign one = one_unbuf;
+`endif
 
+`ifndef CARAVEL_FPGA
     sky130_fd_sc_hd__buf_16 const_zero_buf (
 `ifdef USE_POWER_PINS
             .VPWR(vccd),
@@ -72,6 +81,9 @@ module constant_block (
             .A(zero_unbuf),
             .X(zero)
     );
+`else
+    assign zero = zero_unbuf;
+`endif
 
 endmodule
 `default_nettype wire

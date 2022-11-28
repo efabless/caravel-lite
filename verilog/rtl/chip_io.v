@@ -123,6 +123,7 @@ module chip_io(
 	// rails and grounds, and one back-to-back diode which connects
 	// between the first LV clamp ground and any other ground.
 
+`ifndef CARAVEL_FPGA
     	sky130_ef_io__vddio_hvc_clamped_pad \mgmt_vddio_hvclamp_pad[0]  (
 		`MGMT_ABUTMENT_PINS
 `ifndef TOP_ROUTING
@@ -264,7 +265,7 @@ module chip_io(
 		.VSSD_PAD(vssd2_pad)
 `endif
     	);
-
+`endif
 	wire [2:0] dm_all =
     		{gpio_mode1_core, gpio_mode1_core, gpio_mode0_core};
 	wire[2:0] flash_io0_mode =
@@ -276,8 +277,10 @@ module chip_io(
     wire [6:0] vssd_const_zero;	// Constant value for management pins
 
     constant_block constant_value_inst [6:0] (
+`ifndef CARAVEL_FPGA
 	.vccd(vccd),
 	.vssd(vssd),
+`endif
 	.one(vccd_const_one),
 	.zero(vssd_const_zero)
     );
@@ -300,7 +303,7 @@ module chip_io(
     	// the digital reset input resetb on caravel due to the lack of an on-board
     	// power-on-reset circuit.  The XRES pad is used for providing a glitch-
     	// free reset.
-
+`ifndef CARAVEL_FPGA
 	wire xresloop;
 	wire xres_vss_loop;
 	sky130_fd_io__top_xres4v2 resetb_pad (
@@ -373,6 +376,7 @@ module chip_io(
 		.VCCHIB(vccd)
 `endif
     	    );
+`endif
 
 	mprj_io mprj_pads(
 		.vddio(vddio),

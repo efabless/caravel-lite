@@ -73,6 +73,7 @@
 	.SRC_BDY_LVC1(L1), \
 	.SRC_BDY_LVC2(L2)
 
+`ifndef CARAVEL_FPGA
 `define INPUT_PAD(X,Y,CONB_ONE,CONB_ZERO) \
 	wire loop_zero_``X; \
 	wire loop_one_``X; \
@@ -204,5 +205,43 @@
 		.IN_H(), \
 		.TIE_HI_ESD(loop_one_``X), \
 		.TIE_LO_ESD(loop_zero_``X) )
+`else
+`define INPUT_PAD(X,Y,CONB_ONE,CONB_ZERO) \
+    IBUF X``_pad ( \
+    	.O(Y), \
+    	.I(X) \
+    );
 
+`define OUTPUT_PAD(X,Y,CONB_ONE,CONB_ZERO,INPUT_DIS,OUT_EN_N) \
+    IOBUF_INTERMDISABLE #( \
+    	.USE_IBUFDISABLE("TRUE") \
+    ) X``_pad ( \
+    	.O(Y), \
+    	.INTERMDISABLE(1'b0), \
+    	.I(Y_OUT), \
+    	.IBUFDISABLE(~INPUT_DIS), \
+    	.IO(X), \
+    .	T(OUT_EN_N) \
+    );
+
+`define OUTPUT_NO_INP_DIS_PAD(X,Y,CONB_ONE,CONB_ZERO,OUT_EN_N) \
+    OBUFT X``_pad ( \
+    	.O(X), \
+    	.I(Y), \
+    	.T(OUT_EN_N) \
+    );
+
+`define INOUT_PAD(X,Y,CONB_ONE,CONB_ZERO,Y_OUT,INPUT_DIS,OUT_EN_N,MODE) \
+    IOBUF_INTERMDISABLE #( \
+    	.USE_IBUFDISABLE("TRUE") \
+    ) X``_pad ( \
+    	.O(Y), \
+    	.INTERMDISABLE(1'b0), \
+    	.I(Y_OUT), \
+    	.IBUFDISABLE(~INPUT_DIS), \
+    	.IO(X), \
+    	.T(OUT_EN_N) \
+    );
+
+`endif
 // `default_nettype wire
