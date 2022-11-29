@@ -14,7 +14,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /* Integer-N clock divider */
+`ifdef CARAVEL_FPGA
+`default_nettype wire
+`else
 `default_nettype none
+`endif
  
 module clock_div #(
     parameter SIZE = 3		// Number of bits for the divider value

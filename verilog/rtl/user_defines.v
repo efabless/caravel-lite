@@ -13,7 +13,11 @@
 // limitations under the License.
 // SPDX-License-Identifier: Apache-2.0
 
+`ifdef CARAVEL_FPGA
+`default_nettype wire
+`else
 `default_nettype none
+`endif
 
 `ifndef __USER_DEFINES_H
 // User GPIO initial configuration parameters

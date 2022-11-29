@@ -13,7 +13,11 @@
 // limitations under the License.
 // SPDX-License-Identifier: Apache-2.0
 
+`ifdef CARAVEL_FPGA
+`default_nettype wire
+`else
 `default_nettype none
+`endif
 // This module represents an unprogrammed mask revision
 // block that is configured with via programming on the
 // chip top level.  This value is passed to the block as

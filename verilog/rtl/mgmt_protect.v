@@ -13,7 +13,11 @@
 // limitations under the License.
 // SPDX-License-Identifier: Apache-2.0
 
+`ifdef CARAVEL_FPGA
+`default_nettype wire
+`else
 `default_nettype none
+`endif
 /*----------------------------------------------------------------------*/
 /* Buffers protecting the management region from the user region.	*/
 /* This mainly consists of tristate buffers that are enabled by a	*/

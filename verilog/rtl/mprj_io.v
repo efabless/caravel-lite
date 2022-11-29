@@ -13,7 +13,11 @@
 // limitations under the License.
 // SPDX-License-Identifier: Apache-2.0
 
+// `ifdef CARAVEL_FPGA
+// `default_nettype wire
+// `else
 // `default_nettype none
+// `endif
 
 /* Define the array of GPIO pads.  Note that the analog project support
  * version of caravel (caravan) defines fewer GPIO and replaces them
