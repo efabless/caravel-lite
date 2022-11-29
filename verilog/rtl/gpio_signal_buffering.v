@@ -115,6 +115,9 @@ module gpio_signal_buffering (
     wire [195:0] buf_in;
     wire [195:0] buf_out;
 
+`ifdef CARAVEL_FPGA
+    assign buf_out = buf_in;
+`else
     sky130_fd_sc_hd__buf_8 signal_buffers [195:0] (
 	`ifdef USE_POWER_PINS
 	    .VPWR(vccd),
@@ -125,6 +128,7 @@ module gpio_signal_buffering (
 	.A(buf_in),
 	.X(buf_out)
     );
+`endif
 
     /* Now chain them all together */
 
@@ -474,6 +478,7 @@ module gpio_signal_buffering (
     assign buf_in[195] = buf_out[194];
     assign mgmt_io_oeb_buf[2] = buf_out[195];
 
+`ifndef CARAVEL_FPGA
   sky130_ef_sc_hd__decap_12 sigbuf_decaps [100:0] (
 	`ifdef USE_POWER_PINS
 	    .VPWR(vccd),
@@ -482,5 +487,6 @@ module gpio_signal_buffering (
 	    .VNB(vssd)
 	`endif
   );
+`endif
 
 endmodule
