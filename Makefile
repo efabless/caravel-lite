@@ -54,7 +54,7 @@ MCW_LITE?=1
 
 ifeq ($(MCW),LITEX_VEXRISCV)
 	MCW_NAME := mcw-litex-vexriscv
-	MCW_REPO := https://github.com/efabless/caravel_mgmt_soc_litex
+	MCW_REPO := https://github.com/antmicro/caravel_mgmt_soc_litex
 	MCW_TAG := $(MPW_TAG)
 else
 	MCW_NAME := mcw-pico
