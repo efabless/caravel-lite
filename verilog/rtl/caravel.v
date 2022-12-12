@@ -251,6 +251,15 @@ module caravel (
     wire caravel_rstn;
 	
 	// top-level buffers
+`ifdef CARAVEL_FPGA
+	BUFR #(
+		.BUFR_DIVIDE("BYPASS")
+	) buf_rstn (
+		.O(caravel_rstn_buf),
+		.I(caravel_rstn)
+	);
+`endif
+
 	buff_flash_clkrst flash_clkrst_buffers (
 	`ifdef USE_POWER_PINS
 	    .VPWR(vccd_core),
@@ -258,7 +267,9 @@ module caravel (
 	`endif
 	.in_n({
 		caravel_clk,
+	`ifndef CARAVEL_FPGA
 		caravel_rstn,
+	`endif
 		flash_clk_frame, 
 		flash_csb_frame, 
 		flash_clk_oeb, 
@@ -275,7 +286,9 @@ module caravel (
 		flash_io0_di }),
 	.out_s({ 
 		caravel_clk_buf,
+	`ifndef CARAVEL_FPGA
 		caravel_rstn_buf,
+	`endif
 		flash_clk_frame_buf, 
 		flash_csb_frame_buf, 
 		flash_clk_oeb_buf, 
