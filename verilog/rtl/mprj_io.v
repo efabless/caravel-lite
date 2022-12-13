@@ -105,15 +105,12 @@ module mprj_io #(
 	    .TIE_LO_ESD(loop0_io[AREA1PADS - 1:0])
     );
 `else
-    IOBUF_INTERMDISABLE #(
-	.USE_IBUFDISABLE("TRUE")
-    ) area1_io_pad [AREA1PADS - 1:0] (
-	.O(io_in[AREA1PADS - 1:0]),
-	.INTERMDISABLE(1'b0),
-	.I(io_out[AREA1PADS - 1:0]),
-	.IBUFDISABLE(~inp_dis[AREA1PADS - 1:0]),
-	.IO(io[AREA1PADS - 1:0]),
-	.T(oeb[AREA1PADS - 1:0])
+    fpga_gpio area1_io_pad [AREA1PADS - 1:0] (
+	.o(io_in[AREA1PADS - 1:0]),
+	.i(io_out[AREA1PADS - 1:0]),
+	.ie(~inp_dis[AREA1PADS - 1:0]),
+	.io(io[AREA1PADS - 1:0]),
+	.oe(oeb[AREA1PADS - 1:0])
     );
 `endif
 
@@ -149,15 +146,12 @@ module mprj_io #(
 	    .TIE_LO_ESD(loop0_io[TOTAL_PADS - 1:AREA1PADS])
     );
 `else
-    IOBUF_INTERMDISABLE #(
-	.USE_IBUFDISABLE("TRUE")
-    ) area2_io_pad [TOTAL_PADS - AREA1PADS - 1:0] (
-	.O(io_in[TOTAL_PADS - 1:AREA1PADS]),
-	.INTERMDISABLE(1'b0),
-	.I(io_out[TOTAL_PADS - 1:AREA1PADS]),
-	.IBUFDISABLE(~inp_dis[TOTAL_PADS - 1:AREA1PADS]),
-	.IO(io[TOTAL_PADS - 1:AREA1PADS]),
-	.T(oeb[TOTAL_PADS - 1:AREA1PADS])
+    fpga_gpio area2_io_pad [TOTAL_PADS - AREA1PADS - 1:0] (
+	.o(io_in[TOTAL_PADS - 1:AREA1PADS]),
+	.i(io_out[TOTAL_PADS - 1:AREA1PADS]),
+	.ie(~inp_dis[TOTAL_PADS - 1:AREA1PADS]),
+	.io(io[TOTAL_PADS - 1:AREA1PADS]),
+	.oe(oeb[TOTAL_PADS - 1:AREA1PADS])
     );
 `endif
 

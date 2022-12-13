@@ -27,6 +27,7 @@ add_files -norecurse "./verilog/rtl/defines.v" \
     "${mgmtDir}/verilog/rtl/mgmt_core_wrapper.v" \
     "${mgmtDir}/verilog/rtl/VexRiscv_MinDebug.v" \
     "./verilog/rtl/fpga_ram.v" \
+    "./verilog/rtl/fpga_gpio.v" \
     "./verilog/rtl/clock_div.v" \
     "./verilog/rtl/caravel_clocking.v" \
     "./verilog/rtl/housekeeping.v" \

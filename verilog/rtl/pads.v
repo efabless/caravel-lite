@@ -211,41 +211,40 @@
 		.TIE_LO_ESD(loop_zero_``X) )
 `else
 `define INPUT_PAD(X,Y,CONB_ONE,CONB_ZERO) \
-    IBUF X``_pad ( \
-    	.O(Y), \
-    	.I(X) \
-    );
+	fpga_gpio X``_pad ( \
+		.i(Y), \
+		.io(X), \
+		.ie(1'b1), \
+		.o(1'b0), \
+		.oe(1'b0) \
+	);
 
 `define OUTPUT_PAD(X,Y,CONB_ONE,CONB_ZERO,INPUT_DIS,OUT_EN_N) \
-    IOBUF_INTERMDISABLE #( \
-    	.USE_IBUFDISABLE("TRUE") \
-    ) X``_pad ( \
-    	.O(Y), \
-    	.INTERMDISABLE(1'b0), \
-    	.I(Y_OUT), \
-    	.IBUFDISABLE(~INPUT_DIS), \
-    	.IO(X), \
-    .	T(OUT_EN_N) \
-    );
+	fpga_gpio X``_pad ( \
+		.io(X), \
+		.o(Y), \
+		.oe(OUT_EN_N), \
+		.i(1'b0), \
+		.ie(~INPUT_DIS) \
+	);
 
 `define OUTPUT_NO_INP_DIS_PAD(X,Y,CONB_ONE,CONB_ZERO,OUT_EN_N) \
-    OBUFT X``_pad ( \
-    	.O(X), \
-    	.I(Y), \
-    	.T(OUT_EN_N) \
-    );
+	fpga_gpio X``_pad ( \
+		.io(X), \
+		.o(Y), \
+		.oe(OUT_EN_N), \
+		.i(1'b0), \
+		.ie(1'b0) \
+	);
 
 `define INOUT_PAD(X,Y,CONB_ONE,CONB_ZERO,Y_OUT,INPUT_DIS,OUT_EN_N,MODE) \
-    IOBUF_INTERMDISABLE #( \
-    	.USE_IBUFDISABLE("TRUE") \
-    ) X``_pad ( \
-    	.O(Y), \
-    	.INTERMDISABLE(1'b0), \
-    	.I(Y_OUT), \
-    	.IBUFDISABLE(~INPUT_DIS), \
-    	.IO(X), \
-    	.T(OUT_EN_N) \
-    );
+	fpga_gpio X``_pad ( \
+		.o(Y), \
+		.i(Y_OUT), \
+		.ie(~INPUT_DIS), \
+		.io(X), \
+		.oe(OUT_EN_N) \
+	);
 
 `endif
 // `default_nettype wire
