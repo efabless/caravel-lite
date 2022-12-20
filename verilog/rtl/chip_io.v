@@ -291,6 +291,7 @@ module chip_io(
 
 	// Management clock input pad
 	`INPUT_PAD(clock, clock_core, vccd_const_one[0], vssd_const_zero[0]);
+	`INPUT_PAD(resetb, resetb_core_h, vccd_const_one[0], vssd_const_zero[0]);
 
     // Management GPIO pad
 	`INOUT_PAD(gpio, gpio_in_core, vccd_const_one[1], vssd_const_zero[1], gpio_out_core, gpio_inenb_core, gpio_outenb_core, dm_all);

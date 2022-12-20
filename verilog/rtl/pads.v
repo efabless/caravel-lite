@@ -211,40 +211,17 @@
 		.TIE_LO_ESD(loop_zero_``X) )
 `else
 `define INPUT_PAD(X,Y,CONB_ONE,CONB_ZERO) \
-	fpga_gpio X``_pad ( \
-		.i(Y), \
-		.io(X), \
-		.ie(1'b1), \
-		.o(1'b0), \
-		.oe(1'b0) \
-	);
+	assign Y = X;
 
 `define OUTPUT_PAD(X,Y,CONB_ONE,CONB_ZERO,INPUT_DIS,OUT_EN_N) \
-	fpga_gpio X``_pad ( \
-		.io(X), \
-		.o(Y), \
-		.oe(OUT_EN_N), \
-		.i(1'b0), \
-		.ie(~INPUT_DIS) \
-	);
+    assign X = (OUT_EN_N ? 'bz : Y);
 
 `define OUTPUT_NO_INP_DIS_PAD(X,Y,CONB_ONE,CONB_ZERO,OUT_EN_N) \
-	fpga_gpio X``_pad ( \
-		.io(X), \
-		.o(Y), \
-		.oe(OUT_EN_N), \
-		.i(1'b0), \
-		.ie(1'b0) \
-	);
+	assign X = (OUT_EN_N ? 'bz : Y);
 
 `define INOUT_PAD(X,Y,CONB_ONE,CONB_ZERO,Y_OUT,INPUT_DIS,OUT_EN_N,MODE) \
-	fpga_gpio X``_pad ( \
-		.o(Y), \
-		.i(Y_OUT), \
-		.ie(~INPUT_DIS), \
-		.io(X), \
-		.oe(OUT_EN_N) \
-	);
+	assign X = (OUT_EN_N ? 'bz : Y_OUT); \
+	assign Y = (INPUT_DIS ? 'bz : X);
 
 `endif
 // `default_nettype wire

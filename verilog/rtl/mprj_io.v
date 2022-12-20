@@ -106,11 +106,11 @@ module mprj_io #(
     );
 `else
     fpga_gpio area1_io_pad [AREA1PADS - 1:0] (
-	.o(io_in[AREA1PADS - 1:0]),
-	.i(io_out[AREA1PADS - 1:0]),
-	.ie(~inp_dis[AREA1PADS - 1:0]),
-	.io(io[AREA1PADS - 1:0]),
-	.oe(oeb[AREA1PADS - 1:0])
+	.chip_o(io_out[AREA1PADS - 1:0]),
+	.chip_i(io_in[AREA1PADS - 1:0]),
+	.chip_ie_n(inp_dis[AREA1PADS - 1:0]),
+	.pad_io(io[AREA1PADS - 1:0]),
+	.chip_oe_n(oeb[AREA1PADS - 1:0])
     );
 `endif
 
@@ -147,11 +147,11 @@ module mprj_io #(
     );
 `else
     fpga_gpio area2_io_pad [TOTAL_PADS - AREA1PADS - 1:0] (
-	.o(io_in[TOTAL_PADS - 1:AREA1PADS]),
-	.i(io_out[TOTAL_PADS - 1:AREA1PADS]),
-	.ie(~inp_dis[TOTAL_PADS - 1:AREA1PADS]),
-	.io(io[TOTAL_PADS - 1:AREA1PADS]),
-	.oe(oeb[TOTAL_PADS - 1:AREA1PADS])
+	.chip_o(io_out[TOTAL_PADS - 1:AREA1PADS]),
+	.chip_i(io_in[TOTAL_PADS - 1:AREA1PADS]),
+	.chip_ie_n(inp_dis[TOTAL_PADS - 1:AREA1PADS]),
+	.pad_io(io[TOTAL_PADS - 1:AREA1PADS]),
+	.chip_oe_n(oeb[TOTAL_PADS - 1:AREA1PADS])
     );
 `endif
 
