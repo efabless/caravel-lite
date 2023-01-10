@@ -1592,6 +1592,11 @@ module caravel (
     );
 
     // Power-on-reset circuit
+	`ifdef CARAVEL_FPGA
+	assign porb_l = 1'b1;
+	assign porb_h = 1'b1;
+	assign por_l = 1'b0;
+	`else
     simple_por por (
 	`ifdef USE_POWER_PINS
 		.vdd3v3(vddio_core),
@@ -1603,8 +1608,12 @@ module caravel (
 		.porb_l(porb_l),
 		.por_l(por_l)
     );
+	`endif
 
     // XRES (chip input pin reset) reset level converter
+	`ifdef CARAVEL_FPGA
+	assign rstb_l = rstb_h;
+	`else
     xres_buf rstb_level (
 	`ifdef USE_POWER_PINS
 		.VPWR(vddio_core),
@@ -1615,6 +1624,7 @@ module caravel (
 		.A(rstb_h),
 		.X(rstb_l)
     );
+	`endif
 
     /* Spare logic for metal mask fixes */
     // `define NUM_SPARE_BLOCKS (`MPRJ_IO_PADS+4)

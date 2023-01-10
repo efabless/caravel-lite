@@ -41,16 +41,16 @@ add_files -norecurse "./verilog/rtl/defines.v" \
     "./verilog/rtl/mprj_io.v" \
     "./verilog/rtl/mgmt_protect.v" \
     "./verilog/rtl/user_id_programming.v" \
-    "./verilog/rtl/xres_buf.v" \
     "./verilog/rtl/spare_logic_block.v" \
     "./verilog/rtl/constant_block.v" \
     "./verilog/rtl/chip_io.v" \
-    "./verilog/rtl/simple_por.v" \
     "./verilog/rtl/gpio_signal_buffering.v" \
     "./verilog/rtl/debug_regs.v" \
     "./verilog/rtl/buff_flash_clkrst.v" \
     "./verilog/rtl/__user_project_wrapper.v" \
     "./verilog/rtl/caravel.v"
+    #"./verilog/rtl/simple_por.v"
+    #"./verilog/rtl/xres_buf.v" 
 import_files -force -norecurse
 set_property is_global_include 1 [get_files "defines.v"]
 set_property is_global_include 1 [get_files "user_defines.v"]
