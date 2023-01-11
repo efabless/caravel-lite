@@ -36,6 +36,7 @@ module caravel (
 
     // All top-level I/O are package-facing pins
 
+`ifndef CARAVEL_FPGA
     inout vddio,	// Common 3.3V padframe/ESD power
     inout vddio_2,	// Common 3.3V padframe/ESD power
     inout vssio,	// Common padframe/ESD ground
@@ -54,6 +55,7 @@ module caravel (
     inout vccd2,	// User area 2 1.8V power
     inout vssd1,	// User area 1 digital ground
     inout vssd2,	// User area 2 digital ground
+`endif
 
     inout gpio,		// Used for external LDO control
     inout [`MPRJ_IO_PADS-1:0] mprj_io,
@@ -335,6 +337,7 @@ module caravel (
 	`endif
 
 	chip_io padframe(
+	`ifndef CARAVEL_FPGA
 	`ifndef TOP_ROUTING
 		// Package Pins
 		.vddio_pad	(vddio),		// Common padframe/ESD supply
@@ -369,6 +372,7 @@ module caravel (
         .vccd2	(vccd2_core),
         .vssd1	(vssd1_core),
         .vssd2	(vssd2_core),
+	`endif
 	`endif
 	// Core Side Pins
 	.gpio(gpio),
@@ -490,6 +494,9 @@ module caravel (
 	// NC passthru signal porb_h 
 	wire porb_h_in_nc;
 	wire porb_h_out_nc;
+	`ifdef CARAVEL_FPGA
+	assign porb_h_in_nc = 1'b0;
+	`endif
 
     mgmt_core_wrapper soc (
 	`ifdef USE_POWER_PINS

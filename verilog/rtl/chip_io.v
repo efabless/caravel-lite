@@ -19,6 +19,7 @@
 `default_nettype none
 `endif
 module chip_io(
+	`ifndef CARAVEL_FPGA
 	// Package Pins
 	inout  vddio_pad,		// Common padframe/ESD supply
 	inout  vddio_pad2,
@@ -54,6 +55,7 @@ module chip_io(
 	inout  vccd2,		// User area 2 1.8V supply
 	inout  vssd1,		// User area 1 digital ground
 	inout  vssd2,		// User area 2 digital ground
+	`endif
 
 	inout  gpio,
 	input  clock,
@@ -115,8 +117,10 @@ module chip_io(
 
     assign mprj_io_enh = {`MPRJ_IO_PADS{porb_h}};
 	
+	`ifndef CARAVEL_FPGA
 	wire analog_a, analog_b;
 	wire vddio_q, vssio_q;
+	`endif
 
 	// Instantiate power and ground pads for management domain
 	// 12 pads:  vddio, vssio, vdda, vssa, vccd, vssd
@@ -384,6 +388,7 @@ module chip_io(
 `endif
 
 	mprj_io mprj_pads(
+		`ifndef CARAVEL_FPGA
 		.vddio(vddio),
 		.vssio(vssio),
 		.vccd(vccd),
@@ -396,6 +401,7 @@ module chip_io(
 		.vssio_q(vssio_q),
 		.analog_a(analog_a),
 		.analog_b(analog_b),
+		`endif
 		.porb_h(porb_h),
 		.vccd_conb(mprj_io_one),
 		.io(mprj_io),
@@ -412,7 +418,9 @@ module chip_io(
 		.analog_pol(mprj_io_analog_pol),
 		.dm(mprj_io_dm),
 		.io_in(mprj_io_in),
-		.analog_io(mprj_analog_io)
+		.io_in_3v3(mprj_io_in),
+		.analog_io(mprj_analog_io),
+		.analog_noesd_io(mprj_analog_io)
 	);
 
 endmodule

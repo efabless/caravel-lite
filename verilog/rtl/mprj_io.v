@@ -31,6 +31,7 @@ module mprj_io #(
     parameter AREA1PADS = `MPRJ_IO_PADS_1,
     parameter TOTAL_PADS = `MPRJ_IO_PADS
 ) (
+    `ifndef CARAVEL_FPGA
     inout vddio,
     inout vssio,
     inout vdda,
@@ -47,6 +48,7 @@ module mprj_io #(
     input vssio_q,
     input analog_a,
     input analog_b,
+    `endif
     input porb_h,
     input [TOTAL_PADS-1:0] vccd_conb,
     inout [TOTAL_PADS-1:0] io,
