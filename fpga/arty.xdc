@@ -9,7 +9,7 @@ set_property IOSTANDARD LVCMOS33 [get_ports {clock}]
 set_property LOC C2 [get_ports {resetb}]
 set_property IOSTANDARD LVCMOS33 [get_ports {resetb}]
 
-# gpio - IO1
+# gpio @ LD7
 set_property LOC T10 [get_ports {gpio}]
 set_property IOSTANDARD LVCMOS33 [get_ports {gpio}]
 

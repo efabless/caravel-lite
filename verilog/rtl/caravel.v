@@ -134,6 +134,7 @@ module caravel (
     // User Project Control (pad-facing)
     wire [`MPRJ_IO_PADS-1:0] mprj_io_inp_dis;
     wire [`MPRJ_IO_PADS-1:0] mprj_io_oeb;
+	`ifndef CARAVEL_FPGA
     wire [`MPRJ_IO_PADS-1:0] mprj_io_ib_mode_sel;
     wire [`MPRJ_IO_PADS-1:0] mprj_io_vtrip_sel;
     wire [`MPRJ_IO_PADS-1:0] mprj_io_slow_sel;
@@ -142,6 +143,7 @@ module caravel (
     wire [`MPRJ_IO_PADS-1:0] mprj_io_analog_sel;
     wire [`MPRJ_IO_PADS-1:0] mprj_io_analog_pol;
     wire [`MPRJ_IO_PADS*3-1:0] mprj_io_dm;
+	`endif
     wire [`MPRJ_IO_PADS-1:0] mprj_io_in;
     wire [`MPRJ_IO_PADS-1:0] mprj_io_out;
     wire [`MPRJ_IO_PADS-1:0] mprj_io_one;
@@ -410,6 +412,7 @@ module caravel (
 	.mprj_io_in(mprj_io_in),
 	.mprj_io_out(mprj_io_out),
 	.mprj_io_oeb(mprj_io_oeb),
+	`ifndef CARAVEL_FPGA
 	.mprj_io_inp_dis(mprj_io_inp_dis),
 	.mprj_io_ib_mode_sel(mprj_io_ib_mode_sel),
 	.mprj_io_vtrip_sel(mprj_io_vtrip_sel),
@@ -420,6 +423,9 @@ module caravel (
 	.mprj_io_analog_pol(mprj_io_analog_pol),
 	.mprj_io_dm(mprj_io_dm),
 	.mprj_analog_io(user_analog_io)
+	`else
+	.mprj_io_inp_dis(mprj_io_inp_dis)
+	`endif
     );
 
 
@@ -1362,6 +1368,7 @@ module caravel (
 
     	// Pad-facing signals (Pad GPIOv2)
     	.pad_gpio_inenb(mprj_io_inp_dis[1:0]),
+		`ifndef CARAVEL_FPGA
     	.pad_gpio_ib_mode_sel(mprj_io_ib_mode_sel[1:0]),
     	.pad_gpio_vtrip_sel(mprj_io_vtrip_sel[1:0]),
     	.pad_gpio_slow_sel(mprj_io_slow_sel[1:0]),
@@ -1370,6 +1377,7 @@ module caravel (
     	.pad_gpio_ana_sel(mprj_io_analog_sel[1:0]),
     	.pad_gpio_ana_pol(mprj_io_analog_pol[1:0]),
     	.pad_gpio_dm(mprj_io_dm[5:0]),
+		`endif
     	.pad_gpio_outenb(mprj_io_oeb[1:0]),
     	.pad_gpio_out(mprj_io_out[1:0]),
     	.pad_gpio_in(mprj_io_in[1:0])
@@ -1415,6 +1423,7 @@ module caravel (
 
     	// Pad-facing signals (Pad GPIOv2)
     	.pad_gpio_inenb(mprj_io_inp_dis[7:2]),
+		`ifndef CARAVEL_FPGA
     	.pad_gpio_ib_mode_sel(mprj_io_ib_mode_sel[7:2]),
     	.pad_gpio_vtrip_sel(mprj_io_vtrip_sel[7:2]),
     	.pad_gpio_slow_sel(mprj_io_slow_sel[7:2]),
@@ -1423,6 +1432,7 @@ module caravel (
     	.pad_gpio_ana_sel(mprj_io_analog_sel[7:2]),
     	.pad_gpio_ana_pol(mprj_io_analog_pol[7:2]),
     	.pad_gpio_dm(mprj_io_dm[23:6]),
+		`endif
     	.pad_gpio_outenb(mprj_io_oeb[7:2]),
     	.pad_gpio_out(mprj_io_out[7:2]),
     	.pad_gpio_in(mprj_io_in[7:2])
@@ -1468,6 +1478,7 @@ module caravel (
 
     	// Pad-facing signals (Pad GPIOv2)
     	.pad_gpio_inenb(mprj_io_inp_dis[(`MPRJ_IO_PADS_1-1):8]),
+		`ifndef CARAVEL_FPGA
     	.pad_gpio_ib_mode_sel(mprj_io_ib_mode_sel[(`MPRJ_IO_PADS_1-1):8]),
     	.pad_gpio_vtrip_sel(mprj_io_vtrip_sel[(`MPRJ_IO_PADS_1-1):8]),
     	.pad_gpio_slow_sel(mprj_io_slow_sel[(`MPRJ_IO_PADS_1-1):8]),
@@ -1476,6 +1487,7 @@ module caravel (
     	.pad_gpio_ana_sel(mprj_io_analog_sel[(`MPRJ_IO_PADS_1-1):8]),
     	.pad_gpio_ana_pol(mprj_io_analog_pol[(`MPRJ_IO_PADS_1-1):8]),
     	.pad_gpio_dm(mprj_io_dm[(`MPRJ_IO_PADS_1*3-1):24]),
+		`endif
     	.pad_gpio_outenb(mprj_io_oeb[(`MPRJ_IO_PADS_1-1):8]),
     	.pad_gpio_out(mprj_io_out[(`MPRJ_IO_PADS_1-1):8]),
     	.pad_gpio_in(mprj_io_in[(`MPRJ_IO_PADS_1-1):8])
@@ -1521,6 +1533,7 @@ module caravel (
 
     	// Pad-facing signals (Pad GPIOv2)
     	.pad_gpio_inenb(mprj_io_inp_dis[(`MPRJ_IO_PADS-1):(`MPRJ_IO_PADS-3)]),
+		`ifndef CARAVEL_FPGA
     	.pad_gpio_ib_mode_sel(mprj_io_ib_mode_sel[(`MPRJ_IO_PADS-1):(`MPRJ_IO_PADS-3)]),
     	.pad_gpio_vtrip_sel(mprj_io_vtrip_sel[(`MPRJ_IO_PADS-1):(`MPRJ_IO_PADS-3)]),
     	.pad_gpio_slow_sel(mprj_io_slow_sel[(`MPRJ_IO_PADS-1):(`MPRJ_IO_PADS-3)]),
@@ -1529,6 +1542,7 @@ module caravel (
     	.pad_gpio_ana_sel(mprj_io_analog_sel[(`MPRJ_IO_PADS-1):(`MPRJ_IO_PADS-3)]),
     	.pad_gpio_ana_pol(mprj_io_analog_pol[(`MPRJ_IO_PADS-1):(`MPRJ_IO_PADS-3)]),
     	.pad_gpio_dm(mprj_io_dm[(`MPRJ_IO_PADS*3-1):(`MPRJ_IO_PADS*3-9)]),
+		`endif
     	.pad_gpio_outenb(mprj_io_oeb[(`MPRJ_IO_PADS-1):(`MPRJ_IO_PADS-3)]),
     	.pad_gpio_out(mprj_io_out[(`MPRJ_IO_PADS-1):(`MPRJ_IO_PADS-3)]),
     	.pad_gpio_in(mprj_io_in[(`MPRJ_IO_PADS-1):(`MPRJ_IO_PADS-3)])
@@ -1575,6 +1589,7 @@ module caravel (
 
     	// Pad-facing signals (Pad GPIOv2)
     	.pad_gpio_inenb(mprj_io_inp_dis[(`MPRJ_IO_PADS-4):(`MPRJ_IO_PADS_1)]),
+		`ifndef CARAVEL_FPGA
     	.pad_gpio_ib_mode_sel(mprj_io_ib_mode_sel[(`MPRJ_IO_PADS-4):(`MPRJ_IO_PADS_1)]),
     	.pad_gpio_vtrip_sel(mprj_io_vtrip_sel[(`MPRJ_IO_PADS-4):(`MPRJ_IO_PADS_1)]),
     	.pad_gpio_slow_sel(mprj_io_slow_sel[(`MPRJ_IO_PADS-4):(`MPRJ_IO_PADS_1)]),
@@ -1583,6 +1598,7 @@ module caravel (
     	.pad_gpio_ana_sel(mprj_io_analog_sel[(`MPRJ_IO_PADS-4):(`MPRJ_IO_PADS_1)]),
     	.pad_gpio_ana_pol(mprj_io_analog_pol[(`MPRJ_IO_PADS-4):(`MPRJ_IO_PADS_1)]),
     	.pad_gpio_dm(mprj_io_dm[(`MPRJ_IO_PADS*3-10):(`MPRJ_IO_PADS_1*3)]),
+		`endif
     	.pad_gpio_outenb(mprj_io_oeb[(`MPRJ_IO_PADS-4):(`MPRJ_IO_PADS_1)]),
     	.pad_gpio_out(mprj_io_out[(`MPRJ_IO_PADS-4):(`MPRJ_IO_PADS_1)]),
     	.pad_gpio_in(mprj_io_in[(`MPRJ_IO_PADS-4):(`MPRJ_IO_PADS_1)])

@@ -202,6 +202,7 @@ module gpio_control_block #(
     /* These pad configuration signals are static and do not change	*/
     /* after setup.							*/
 
+    `ifndef CARAVEL_FPGA
     assign pad_gpio_holdover 	= gpio_holdover;
     assign pad_gpio_slow_sel 	= gpio_slow_sel;
     assign pad_gpio_vtrip_sel	= gpio_vtrip_sel;
@@ -210,6 +211,7 @@ module gpio_control_block #(
     assign pad_gpio_ana_sel	= gpio_ana_sel;
     assign pad_gpio_ana_pol	= gpio_ana_pol;
     assign pad_gpio_dm		= gpio_dm;
+    `endif
     assign pad_gpio_inenb 	= gpio_inenb;
 
     /* Implement pad control behavior depending on state of mgmt_ena */
