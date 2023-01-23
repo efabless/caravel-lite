@@ -69,8 +69,8 @@ module caravel (
 
     output flash_csb,
     output flash_clk,
-    output flash_io0,
-    output flash_io1
+    inout flash_io0,
+    inout flash_io1
 );
 
     //------------------------------------------------------------
