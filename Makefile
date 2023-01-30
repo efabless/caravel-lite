@@ -1223,7 +1223,7 @@ endif
 
 .PHONY: pdk-with-volare
 pdk-with-volare: check-python install-volare 
-	@volare enable ${OPEN_PDKS_COMMIT}
+	@python3 -m volare enable ${OPEN_PDKS_COMMIT}
 
 check-python:
 ifeq ($(shell which python3),)
