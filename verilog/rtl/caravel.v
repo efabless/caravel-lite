@@ -36,6 +36,7 @@ module caravel (
 
     // All top-level I/O are package-facing pins
 
+`ifndef CARAVEL_FPGA
     inout vddio,	// Common 3.3V padframe/ESD power
     inout vddio_2,	// Common 3.3V padframe/ESD power
     inout vssio,	// Common padframe/ESD ground
@@ -54,6 +55,7 @@ module caravel (
     inout vccd2,	// User area 2 1.8V power
     inout vssd1,	// User area 1 digital ground
     inout vssd2,	// User area 2 digital ground
+`endif
 
     inout gpio,		// Used for external LDO control
     inout [`MPRJ_IO_PADS-1:0] mprj_io,
@@ -67,8 +69,8 @@ module caravel (
 
     output flash_csb,
     output flash_clk,
-    output flash_io0,
-    output flash_io1
+    inout flash_io0,
+    inout flash_io1
 );
 
     //------------------------------------------------------------
@@ -132,6 +134,7 @@ module caravel (
     // User Project Control (pad-facing)
     wire [`MPRJ_IO_PADS-1:0] mprj_io_inp_dis;
     wire [`MPRJ_IO_PADS-1:0] mprj_io_oeb;
+	`ifndef CARAVEL_FPGA
     wire [`MPRJ_IO_PADS-1:0] mprj_io_ib_mode_sel;
     wire [`MPRJ_IO_PADS-1:0] mprj_io_vtrip_sel;
     wire [`MPRJ_IO_PADS-1:0] mprj_io_slow_sel;
@@ -140,6 +143,7 @@ module caravel (
     wire [`MPRJ_IO_PADS-1:0] mprj_io_analog_sel;
     wire [`MPRJ_IO_PADS-1:0] mprj_io_analog_pol;
     wire [`MPRJ_IO_PADS*3-1:0] mprj_io_dm;
+	`endif
     wire [`MPRJ_IO_PADS-1:0] mprj_io_in;
     wire [`MPRJ_IO_PADS-1:0] mprj_io_out;
     wire [`MPRJ_IO_PADS-1:0] mprj_io_one;
@@ -251,6 +255,15 @@ module caravel (
     wire caravel_rstn;
 	
 	// top-level buffers
+`ifdef CARAVEL_FPGA
+	BUFR #(
+		.BUFR_DIVIDE("BYPASS")
+	) buf_rstn (
+		.O(caravel_rstn_buf),
+		.I(caravel_rstn)
+	);
+`endif
+
 	buff_flash_clkrst flash_clkrst_buffers (
 	`ifdef USE_POWER_PINS
 	    .VPWR(vccd_core),
@@ -258,7 +271,9 @@ module caravel (
 	`endif
 	.in_n({
 		caravel_clk,
+	`ifndef CARAVEL_FPGA
 		caravel_rstn,
+	`endif
 		flash_clk_frame, 
 		flash_csb_frame, 
 		flash_clk_oeb, 
@@ -275,7 +290,9 @@ module caravel (
 		flash_io0_di }),
 	.out_s({ 
 		caravel_clk_buf,
+	`ifndef CARAVEL_FPGA
 		caravel_rstn_buf,
+	`endif
 		flash_clk_frame_buf, 
 		flash_csb_frame_buf, 
 		flash_clk_oeb_buf, 
@@ -322,6 +339,7 @@ module caravel (
 	`endif
 
 	chip_io padframe(
+	`ifndef CARAVEL_FPGA
 	`ifndef TOP_ROUTING
 		// Package Pins
 		.vddio_pad	(vddio),		// Common padframe/ESD supply
@@ -356,6 +374,7 @@ module caravel (
         .vccd2	(vccd2_core),
         .vssd1	(vssd1_core),
         .vssd2	(vssd2_core),
+	`endif
 	`endif
 	// Core Side Pins
 	.gpio(gpio),
@@ -393,6 +412,7 @@ module caravel (
 	.mprj_io_in(mprj_io_in),
 	.mprj_io_out(mprj_io_out),
 	.mprj_io_oeb(mprj_io_oeb),
+	`ifndef CARAVEL_FPGA
 	.mprj_io_inp_dis(mprj_io_inp_dis),
 	.mprj_io_ib_mode_sel(mprj_io_ib_mode_sel),
 	.mprj_io_vtrip_sel(mprj_io_vtrip_sel),
@@ -403,6 +423,9 @@ module caravel (
 	.mprj_io_analog_pol(mprj_io_analog_pol),
 	.mprj_io_dm(mprj_io_dm),
 	.mprj_analog_io(user_analog_io)
+	`else
+	.mprj_io_inp_dis(mprj_io_inp_dis)
+	`endif
     );
 
 
@@ -477,6 +500,9 @@ module caravel (
 	// NC passthru signal porb_h 
 	wire porb_h_in_nc;
 	wire porb_h_out_nc;
+	`ifdef CARAVEL_FPGA
+	assign porb_h_in_nc = 1'b0;
+	`endif
 
     mgmt_core_wrapper soc (
 	`ifdef USE_POWER_PINS
@@ -750,10 +776,20 @@ module caravel (
 		.VPWR(vccd_core),
 		.VGND(vssd_core),
     `endif
+	`ifndef CARAVEL_FPGA
         .ext_clk_sel(ext_clk_sel),
+	`else
+		// Use external clock pad for now
+        .ext_clk_sel(1'b1),
+	`endif
         .ext_clk(clock_core_buf),
+	`ifndef CARAVEL_FPGA
         .pll_clk(pll_clk),
         .pll_clk90(pll_clk90),
+	`else
+        .pll_clk(1'b0),
+        .pll_clk90(1'b0),
+	`endif
         .resetb(rstb_l_buf),
         .sel(spi_pll_sel),
         .sel2(spi_pll90_sel),
@@ -764,7 +800,7 @@ module caravel (
     );
 
     // DCO/Digital Locked Loop
-
+`ifndef CARAVEL_FPGA
     digital_pll pll (
     `ifdef USE_POWER_PINS
 		.VPWR(vccd_core),
@@ -778,6 +814,7 @@ module caravel (
         .dco(spi_pll_dco_ena),
         .ext_trim(spi_pll_trim)
     );
+`endif
 
     // Housekeeping interface
 
@@ -1331,6 +1368,7 @@ module caravel (
 
     	// Pad-facing signals (Pad GPIOv2)
     	.pad_gpio_inenb(mprj_io_inp_dis[1:0]),
+		`ifndef CARAVEL_FPGA
     	.pad_gpio_ib_mode_sel(mprj_io_ib_mode_sel[1:0]),
     	.pad_gpio_vtrip_sel(mprj_io_vtrip_sel[1:0]),
     	.pad_gpio_slow_sel(mprj_io_slow_sel[1:0]),
@@ -1339,6 +1377,7 @@ module caravel (
     	.pad_gpio_ana_sel(mprj_io_analog_sel[1:0]),
     	.pad_gpio_ana_pol(mprj_io_analog_pol[1:0]),
     	.pad_gpio_dm(mprj_io_dm[5:0]),
+		`endif
     	.pad_gpio_outenb(mprj_io_oeb[1:0]),
     	.pad_gpio_out(mprj_io_out[1:0]),
     	.pad_gpio_in(mprj_io_in[1:0])
@@ -1384,6 +1423,7 @@ module caravel (
 
     	// Pad-facing signals (Pad GPIOv2)
     	.pad_gpio_inenb(mprj_io_inp_dis[7:2]),
+		`ifndef CARAVEL_FPGA
     	.pad_gpio_ib_mode_sel(mprj_io_ib_mode_sel[7:2]),
     	.pad_gpio_vtrip_sel(mprj_io_vtrip_sel[7:2]),
     	.pad_gpio_slow_sel(mprj_io_slow_sel[7:2]),
@@ -1392,6 +1432,7 @@ module caravel (
     	.pad_gpio_ana_sel(mprj_io_analog_sel[7:2]),
     	.pad_gpio_ana_pol(mprj_io_analog_pol[7:2]),
     	.pad_gpio_dm(mprj_io_dm[23:6]),
+		`endif
     	.pad_gpio_outenb(mprj_io_oeb[7:2]),
     	.pad_gpio_out(mprj_io_out[7:2]),
     	.pad_gpio_in(mprj_io_in[7:2])
@@ -1437,6 +1478,7 @@ module caravel (
 
     	// Pad-facing signals (Pad GPIOv2)
     	.pad_gpio_inenb(mprj_io_inp_dis[(`MPRJ_IO_PADS_1-1):8]),
+		`ifndef CARAVEL_FPGA
     	.pad_gpio_ib_mode_sel(mprj_io_ib_mode_sel[(`MPRJ_IO_PADS_1-1):8]),
     	.pad_gpio_vtrip_sel(mprj_io_vtrip_sel[(`MPRJ_IO_PADS_1-1):8]),
     	.pad_gpio_slow_sel(mprj_io_slow_sel[(`MPRJ_IO_PADS_1-1):8]),
@@ -1445,6 +1487,7 @@ module caravel (
     	.pad_gpio_ana_sel(mprj_io_analog_sel[(`MPRJ_IO_PADS_1-1):8]),
     	.pad_gpio_ana_pol(mprj_io_analog_pol[(`MPRJ_IO_PADS_1-1):8]),
     	.pad_gpio_dm(mprj_io_dm[(`MPRJ_IO_PADS_1*3-1):24]),
+		`endif
     	.pad_gpio_outenb(mprj_io_oeb[(`MPRJ_IO_PADS_1-1):8]),
     	.pad_gpio_out(mprj_io_out[(`MPRJ_IO_PADS_1-1):8]),
     	.pad_gpio_in(mprj_io_in[(`MPRJ_IO_PADS_1-1):8])
@@ -1490,6 +1533,7 @@ module caravel (
 
     	// Pad-facing signals (Pad GPIOv2)
     	.pad_gpio_inenb(mprj_io_inp_dis[(`MPRJ_IO_PADS-1):(`MPRJ_IO_PADS-3)]),
+		`ifndef CARAVEL_FPGA
     	.pad_gpio_ib_mode_sel(mprj_io_ib_mode_sel[(`MPRJ_IO_PADS-1):(`MPRJ_IO_PADS-3)]),
     	.pad_gpio_vtrip_sel(mprj_io_vtrip_sel[(`MPRJ_IO_PADS-1):(`MPRJ_IO_PADS-3)]),
     	.pad_gpio_slow_sel(mprj_io_slow_sel[(`MPRJ_IO_PADS-1):(`MPRJ_IO_PADS-3)]),
@@ -1498,6 +1542,7 @@ module caravel (
     	.pad_gpio_ana_sel(mprj_io_analog_sel[(`MPRJ_IO_PADS-1):(`MPRJ_IO_PADS-3)]),
     	.pad_gpio_ana_pol(mprj_io_analog_pol[(`MPRJ_IO_PADS-1):(`MPRJ_IO_PADS-3)]),
     	.pad_gpio_dm(mprj_io_dm[(`MPRJ_IO_PADS*3-1):(`MPRJ_IO_PADS*3-9)]),
+		`endif
     	.pad_gpio_outenb(mprj_io_oeb[(`MPRJ_IO_PADS-1):(`MPRJ_IO_PADS-3)]),
     	.pad_gpio_out(mprj_io_out[(`MPRJ_IO_PADS-1):(`MPRJ_IO_PADS-3)]),
     	.pad_gpio_in(mprj_io_in[(`MPRJ_IO_PADS-1):(`MPRJ_IO_PADS-3)])
@@ -1544,6 +1589,7 @@ module caravel (
 
     	// Pad-facing signals (Pad GPIOv2)
     	.pad_gpio_inenb(mprj_io_inp_dis[(`MPRJ_IO_PADS-4):(`MPRJ_IO_PADS_1)]),
+		`ifndef CARAVEL_FPGA
     	.pad_gpio_ib_mode_sel(mprj_io_ib_mode_sel[(`MPRJ_IO_PADS-4):(`MPRJ_IO_PADS_1)]),
     	.pad_gpio_vtrip_sel(mprj_io_vtrip_sel[(`MPRJ_IO_PADS-4):(`MPRJ_IO_PADS_1)]),
     	.pad_gpio_slow_sel(mprj_io_slow_sel[(`MPRJ_IO_PADS-4):(`MPRJ_IO_PADS_1)]),
@@ -1552,6 +1598,7 @@ module caravel (
     	.pad_gpio_ana_sel(mprj_io_analog_sel[(`MPRJ_IO_PADS-4):(`MPRJ_IO_PADS_1)]),
     	.pad_gpio_ana_pol(mprj_io_analog_pol[(`MPRJ_IO_PADS-4):(`MPRJ_IO_PADS_1)]),
     	.pad_gpio_dm(mprj_io_dm[(`MPRJ_IO_PADS*3-10):(`MPRJ_IO_PADS_1*3)]),
+		`endif
     	.pad_gpio_outenb(mprj_io_oeb[(`MPRJ_IO_PADS-4):(`MPRJ_IO_PADS_1)]),
     	.pad_gpio_out(mprj_io_out[(`MPRJ_IO_PADS-4):(`MPRJ_IO_PADS_1)]),
     	.pad_gpio_in(mprj_io_in[(`MPRJ_IO_PADS-4):(`MPRJ_IO_PADS_1)])
@@ -1568,6 +1615,11 @@ module caravel (
     );
 
     // Power-on-reset circuit
+	`ifdef CARAVEL_FPGA
+	assign porb_l = 1'b1;
+	assign porb_h = 1'b1;
+	assign por_l = 1'b0;
+	`else
     simple_por por (
 	`ifdef USE_POWER_PINS
 		.vdd3v3(vddio_core),
@@ -1579,8 +1631,12 @@ module caravel (
 		.porb_l(porb_l),
 		.por_l(por_l)
     );
+	`endif
 
     // XRES (chip input pin reset) reset level converter
+	`ifdef CARAVEL_FPGA
+	assign rstb_l = rstb_h;
+	`else
     xres_buf rstb_level (
 	`ifdef USE_POWER_PINS
 		.VPWR(vddio_core),
@@ -1591,6 +1647,7 @@ module caravel (
 		.A(rstb_h),
 		.X(rstb_l)
     );
+	`endif
 
     /* Spare logic for metal mask fixes */
     // `define NUM_SPARE_BLOCKS (`MPRJ_IO_PADS+4)

@@ -56,7 +56,7 @@ MCW_LITE?=1
 
 ifeq ($(MCW),LITEX_VEXRISCV)
 	MCW_NAME := mcw-litex-vexriscv
-	MCW_REPO := https://github.com/efabless/caravel_mgmt_soc_litex
+	MCW_REPO := https://github.com/antmicro/caravel_mgmt_soc_litex
 	MCW_TAG := $(MPW_TAG)
 else
 	MCW_NAME := mcw-pico
@@ -76,7 +76,7 @@ CARAVEL_ROOT ?= $(shell pwd)
 UPRJ_ROOT ?= $(shell pwd)
 
 # MANAGEMENT AREA ROOT
-MGMT_AREA_ROOT ?= $(shell pwd)/mgmt_core_wrapper 
+MGMT_AREA_ROOT ?= $(shell pwd)/mgmt_core_wrapper
 
 # Build tasks such as make ship, make generate_fill, make set_user_id, make final run in the foreground (1) or background (0)
 FOREGROUND ?= 1
@@ -1381,3 +1381,6 @@ README.rst: README.src.rst docs/source/getting-started.rst docs/source/tool-vers
 clean-openlane:
 	rm -rf $(OPENLANE_ROOT)
 
+vivado: fpga/vivado.tcl
+	sed -i "s/\`default_nettype none/\`default_nettype wire/g" ${MCW_ROOT}/verilog/rtl/mgmt_core_wrapper.v
+	env MCW_ROOT=${MCW_ROOT} vivado -nolog -nojournal -mode batch -source $<

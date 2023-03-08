@@ -13,7 +13,11 @@
 // limitations under the License.
 // SPDX-License-Identifier: Apache-2.0
 
+// `ifdef CARAVEL_FPGA
+// `default_nettype wire
+// `else
 // `default_nettype none
+// `endif
 
 /* Define the array of GPIO pads.  Note that the analog project support
  * version of caravel (caravan) defines fewer GPIO and replaces them
@@ -27,6 +31,7 @@ module mprj_io #(
     parameter AREA1PADS = `MPRJ_IO_PADS_1,
     parameter TOTAL_PADS = `MPRJ_IO_PADS
 ) (
+    `ifndef CARAVEL_FPGA
     inout vddio,
     inout vssio,
     inout vdda,
@@ -43,6 +48,7 @@ module mprj_io #(
     input vssio_q,
     input analog_a,
     input analog_b,
+    `endif
     input porb_h,
     input [TOTAL_PADS-1:0] vccd_conb,
     inout [TOTAL_PADS-1:0] io,
@@ -69,6 +75,7 @@ module mprj_io #(
     wire [6:0] no_connect_1a, no_connect_1b;
     wire [1:0] no_connect_2a, no_connect_2b;
 
+`ifndef CARAVEL_FPGA
     sky130_ef_io__gpiov2_pad_wrapped  area1_io_pad [AREA1PADS - 1:0] (
 	`USER1_ABUTMENT_PINS
 	`ifndef	TOP_ROUTING
@@ -99,7 +106,17 @@ module mprj_io #(
 	    .TIE_HI_ESD(loop1_io[AREA1PADS - 1:0]),
 	    .TIE_LO_ESD(loop0_io[AREA1PADS - 1:0])
     );
+`else
+    fpga_gpio area1_io_pad [AREA1PADS - 1:0] (
+	.chip_o(io_out[AREA1PADS - 1:0]),
+	.chip_i(io_in[AREA1PADS - 1:0]),
+	.chip_ie_n(inp_dis[AREA1PADS - 1:0]),
+	.pad_io(io[AREA1PADS - 1:0]),
+	.chip_oe_n(oeb[AREA1PADS - 1:0])
+    );
+`endif
 
+`ifndef CARAVEL_FPGA
     sky130_ef_io__gpiov2_pad_wrapped area2_io_pad [TOTAL_PADS - AREA1PADS - 1:0] (
 	`USER2_ABUTMENT_PINS
 	`ifndef	TOP_ROUTING
@@ -130,6 +147,15 @@ module mprj_io #(
 	    .TIE_HI_ESD(loop1_io[TOTAL_PADS - 1:AREA1PADS]),
 	    .TIE_LO_ESD(loop0_io[TOTAL_PADS - 1:AREA1PADS])
     );
+`else
+    fpga_gpio area2_io_pad [TOTAL_PADS - AREA1PADS - 1:0] (
+	.chip_o(io_out[TOTAL_PADS - 1:AREA1PADS]),
+	.chip_i(io_in[TOTAL_PADS - 1:AREA1PADS]),
+	.chip_ie_n(inp_dis[TOTAL_PADS - 1:AREA1PADS]),
+	.pad_io(io[TOTAL_PADS - 1:AREA1PADS]),
+	.chip_oe_n(oeb[TOTAL_PADS - 1:AREA1PADS])
+    );
+`endif
 
 endmodule
 // `default_nettype wire

@@ -13,8 +13,13 @@
 // limitations under the License.
 // SPDX-License-Identifier: Apache-2.0
 
-// `default_nettype none
+`ifdef CARAVEL_FPGA
+`default_nettype wire
+`else
+`default_nettype none
+`endif
 module chip_io(
+	`ifndef CARAVEL_FPGA
 	// Package Pins
 	inout  vddio_pad,		// Common padframe/ESD supply
 	inout  vddio_pad2,
@@ -50,6 +55,7 @@ module chip_io(
 	inout  vccd2,		// User area 2 1.8V supply
 	inout  vssd1,		// User area 1 digital ground
 	inout  vssd2,		// User area 2 digital ground
+	`endif
 
 	inout  gpio,
 	input  clock,
@@ -111,8 +117,10 @@ module chip_io(
 
     assign mprj_io_enh = {`MPRJ_IO_PADS{porb_h}};
 	
+	`ifndef CARAVEL_FPGA
 	wire analog_a, analog_b;
 	wire vddio_q, vssio_q;
+	`endif
 
 	// Instantiate power and ground pads for management domain
 	// 12 pads:  vddio, vssio, vdda, vssa, vccd, vssd
@@ -123,6 +131,7 @@ module chip_io(
 	// rails and grounds, and one back-to-back diode which connects
 	// between the first LV clamp ground and any other ground.
 
+`ifndef CARAVEL_FPGA
     	sky130_ef_io__vddio_hvc_clamped_pad \mgmt_vddio_hvclamp_pad[0]  (
 		`MGMT_ABUTMENT_PINS
 `ifndef TOP_ROUTING
@@ -264,7 +273,7 @@ module chip_io(
 		.VSSD_PAD(vssd2_pad)
 `endif
     	);
-
+`endif
 	wire [2:0] dm_all =
     		{gpio_mode1_core, gpio_mode1_core, gpio_mode0_core};
 	wire[2:0] flash_io0_mode =
@@ -276,14 +285,17 @@ module chip_io(
     wire [6:0] vssd_const_zero;	// Constant value for management pins
 
     constant_block constant_value_inst [6:0] (
+`ifndef CARAVEL_FPGA
 	.vccd(vccd),
 	.vssd(vssd),
+`endif
 	.one(vccd_const_one),
 	.zero(vssd_const_zero)
     );
 
 	// Management clock input pad
 	`INPUT_PAD(clock, clock_core, vccd_const_one[0], vssd_const_zero[0]);
+	`INPUT_PAD(resetb, resetb_core_h, vccd_const_one[0], vssd_const_zero[0]);
 
     // Management GPIO pad
 	`INOUT_PAD(gpio, gpio_in_core, vccd_const_one[1], vssd_const_zero[1], gpio_out_core, gpio_inenb_core, gpio_outenb_core, dm_all);
@@ -300,7 +312,7 @@ module chip_io(
     	// the digital reset input resetb on caravel due to the lack of an on-board
     	// power-on-reset circuit.  The XRES pad is used for providing a glitch-
     	// free reset.
-
+`ifndef CARAVEL_FPGA
 	wire xresloop;
 	wire xres_vss_loop;
 	sky130_fd_io__top_xres4v2 resetb_pad (
@@ -373,8 +385,10 @@ module chip_io(
 		.VCCHIB(vccd)
 `endif
     	    );
+`endif
 
 	mprj_io mprj_pads(
+		`ifndef CARAVEL_FPGA
 		.vddio(vddio),
 		.vssio(vssio),
 		.vccd(vccd),
@@ -387,6 +401,7 @@ module chip_io(
 		.vssio_q(vssio_q),
 		.analog_a(analog_a),
 		.analog_b(analog_b),
+		`endif
 		.porb_h(porb_h),
 		.vccd_conb(mprj_io_one),
 		.io(mprj_io),
@@ -403,7 +418,9 @@ module chip_io(
 		.analog_pol(mprj_io_analog_pol),
 		.dm(mprj_io_dm),
 		.io_in(mprj_io_in),
-		.analog_io(mprj_analog_io)
+		.io_in_3v3(mprj_io_in),
+		.analog_io(mprj_analog_io),
+		.analog_noesd_io(mprj_analog_io)
 	);
 
 endmodule

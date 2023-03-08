@@ -13,7 +13,11 @@
 // limitations under the License.
 // SPDX-License-Identifier: Apache-2.0
 
+// `ifdef CARAVEL_FPGA
+// `default_nettype wire
+// `else
 // `default_nettype none
+// `endif
 `ifndef TOP_ROUTING 
 	`define USER1_ABUTMENT_PINS \
 	.AMUXBUS_A(analog_a),\
@@ -73,6 +77,7 @@
 	.SRC_BDY_LVC1(L1), \
 	.SRC_BDY_LVC2(L2)
 
+`ifndef CARAVEL_FPGA
 `define INPUT_PAD(X,Y,CONB_ONE,CONB_ZERO) \
 	wire loop_zero_``X; \
 	wire loop_one_``X; \
@@ -204,5 +209,19 @@
 		.IN_H(), \
 		.TIE_HI_ESD(loop_one_``X), \
 		.TIE_LO_ESD(loop_zero_``X) )
+`else
+`define INPUT_PAD(X,Y,CONB_ONE,CONB_ZERO) \
+	assign Y = X;
 
+`define OUTPUT_PAD(X,Y,CONB_ONE,CONB_ZERO,INPUT_DIS,OUT_EN_N) \
+    assign X = (OUT_EN_N ? 'bz : Y);
+
+`define OUTPUT_NO_INP_DIS_PAD(X,Y,CONB_ONE,CONB_ZERO,OUT_EN_N) \
+	assign X = (OUT_EN_N ? 'bz : Y);
+
+`define INOUT_PAD(X,Y,CONB_ONE,CONB_ZERO,Y_OUT,INPUT_DIS,OUT_EN_N,MODE) \
+	assign X = (OUT_EN_N ? 'bz : Y_OUT); \
+	assign Y = (INPUT_DIS ? 'bz : X);
+
+`endif
 // `default_nettype wire

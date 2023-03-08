@@ -13,7 +13,11 @@
 // limitations under the License.
 // SPDX-License-Identifier: Apache-2.0
 
+`ifdef CARAVEL_FPGA
+`default_nettype wire
+`else
 `default_nettype none
+`endif
 /*----------------------------------------------------------------------*/
 /* Buffers protecting the management region from the user region.	*/
 /* This mainly consists of tristate buffers that are enabled by a	*/
@@ -160,6 +164,7 @@ module mgmt_protect (
 
 	assign la_data_in_enable = la_iena_mprj & mprj_logic1[457:330];
 
+`ifndef CARAVEL_FPGA
 	sky130_fd_sc_hd__nand2_4 user_to_mprj_in_gates [127:0] (
 `ifdef USE_POWER_PINS
                 .VPWR(vccd),
@@ -171,13 +176,15 @@ module mgmt_protect (
 		.A(la_data_out_core),		// may be floating
 		.B(la_data_in_enable)
 	);
-
+`else
+ 	assign la_data_in_mprj_bar = ~(la_data_out_core & la_data_in_enable);
+`endif
 	assign la_data_in_mprj = ~la_data_in_mprj_bar;
 
 	// Protection, similar to the above, for the three user IRQ lines
 
 	assign user_irq_enable = user_irq_ena & mprj_logic1[460:458];
-
+`ifndef CARAVEL_FPGA
 	sky130_fd_sc_hd__nand2_4 user_irq_gates [2:0] (
 `ifdef USE_POWER_PINS
                 .VPWR(vccd),
@@ -189,14 +196,16 @@ module mgmt_protect (
 		.A(user_irq_core),		// may be floating
 		.B(user_irq_enable)
 	);
-
+`else
+	assign user_irq_bar = ~(user_irq_core & user_irq_enable);
+`endif
 	assign user_irq = ~user_irq_bar;
 
 	// Protection, similar to the above, for the return
 	// signals from user area to managment on the wishbone bus
 
 	assign wb_in_enable = mprj_iena_wb & mprj_logic1[462];
-
+`ifndef CARAVEL_FPGA
 	sky130_fd_sc_hd__nand2_4 user_wb_dat_gates [31:0] (
 `ifdef USE_POWER_PINS
                 .VPWR(vccd),
@@ -208,9 +217,11 @@ module mgmt_protect (
 		.A(mprj_dat_i_user),		// may be floating
 		.B(wb_in_enable)
 	);
-
+`else
+	assign mprj_dat_i_core_bar = ~(mprj_dat_i_user & wb_in_enable);
+`endif
 	assign mprj_dat_i_core = ~mprj_dat_i_core_bar;
-
+`ifndef CARAVEL_FPGA
 	sky130_fd_sc_hd__nand2_4 user_wb_ack_gate (
 `ifdef USE_POWER_PINS
                 .VPWR(vccd),
@@ -222,7 +233,9 @@ module mgmt_protect (
 		.A(mprj_ack_i_user),		// may be floating
 		.B(wb_in_enable)
 	);
-
+`else
+	assign mprj_ack_i_core_bar = ~(mprj_ack_i_user & wb_in_enable);
+`endif
 	assign mprj_ack_i_core = ~mprj_ack_i_core_bar;
 
 	// The remaining circuitry guards against the management

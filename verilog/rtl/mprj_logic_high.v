@@ -20,6 +20,7 @@ module mprj_logic_high (
 `endif
     output [462:0] HI
 );
+`ifndef CARAVEL_FPGA
 sky130_fd_sc_hd__conb_1 insts [462:0] (
 `ifdef USE_POWER_PINS
                 .VPWR(vccd1),
@@ -30,4 +31,7 @@ sky130_fd_sc_hd__conb_1 insts [462:0] (
                 .HI(HI),
                 .LO()
         );
+`else
+    assign HI = ~0;
+`endif
 endmodule

@@ -13,7 +13,11 @@
 // limitations under the License.
 // SPDX-License-Identifier: Apache-2.0
 
+`ifdef CARAVEL_FPGA
+`default_nettype wire
+`else
 `default_nettype none
+`endif
 `timescale 1 ns / 1 ps
 
 module simple_por(
@@ -29,12 +33,19 @@ module simple_por(
 );
 
     wire mid;
+`ifdef CARAVEL_FPGA
+    wire inode;
+`else
     reg inode;
+`endif
 
     // This is a behavioral model!  Actual circuit is a resitor dumping
     // current (slowly) from vdd3v3 onto a capacitor, and this fed into
     // two schmitt triggers for strong hysteresis/glitch tolerance.
 
+`ifdef CARAVEL_FPGA
+    assign inode = 1'b1;
+`else
     initial begin
 	inode <= 1'b0; 
     end 
@@ -49,9 +60,15 @@ module simple_por(
     always @(negedge vdd3v3) begin
 	#500 inode <= 1'b0;
     end
+`endif
 
     // Instantiate two shmitt trigger buffers in series
 
+`ifdef CARAVEL_FPGA
+    assign mid = inode;
+    assign porb_h = mid;
+    assign porb_l = porb_h;
+`else
     sky130_fd_sc_hvl__schmittbuf_1 hystbuf1 (
 `ifdef USE_POWER_PINS
 	.VPWR(vdd3v3),
@@ -85,6 +102,7 @@ module simple_por(
 	.A(porb_h),
 	.X(porb_l)
     );
+`endif
 
     // since this is behavioral anyway, but this should be
     // replaced by a proper inverter

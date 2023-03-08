@@ -13,7 +13,11 @@
 // limitations under the License.
 // SPDX-License-Identifier: Apache-2.0
 
+`ifdef CARAVEL_FPGA
+`default_nettype wire
+`else
 `default_nettype none
+`endif
 /* 
  *---------------------------------------------------------------------
  * See gpio_control_block for description.  This module is like
@@ -198,6 +202,7 @@ module gpio_control_block #(
     /* These pad configuration signals are static and do not change	*/
     /* after setup.							*/
 
+    `ifndef CARAVEL_FPGA
     assign pad_gpio_holdover 	= gpio_holdover;
     assign pad_gpio_slow_sel 	= gpio_slow_sel;
     assign pad_gpio_vtrip_sel	= gpio_vtrip_sel;
@@ -206,6 +211,7 @@ module gpio_control_block #(
     assign pad_gpio_ana_sel	= gpio_ana_sel;
     assign pad_gpio_ana_pol	= gpio_ana_pol;
     assign pad_gpio_dm		= gpio_dm;
+    `endif
     assign pad_gpio_inenb 	= gpio_inenb;
 
     /* Implement pad control behavior depending on state of mgmt_ena */
@@ -243,6 +249,7 @@ module gpio_control_block #(
     /* going to the user project.					*/
     assign user_gpio_in = pad_gpio_in & gpio_logic1;
 
+`ifndef CARAVEL_FPGA
     (* keep *)
     sky130_fd_sc_hd__macro_sparecell spare_cell (
 `ifdef USE_POWER_PINS
@@ -266,6 +273,9 @@ module gpio_control_block #(
 
     assign zero = zero_unbuf;
     assign one = one_unbuf;
-
+`else
+    assign zero = 1'b0;
+    assign one = 1'b1;
+`endif
 endmodule
 `default_nettype wire
